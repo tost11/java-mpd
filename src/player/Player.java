@@ -170,7 +170,7 @@ public class Player {
             querryOrder.add(new PlayerCommandResult("idle"));
             sockerWriter.flush();
             while(connectSocket.getInputStream().available()<0);
-            Update();
+            update();
             Logger.getInstance().log(Logger.Logtype.DEBUG,"Connection established");
         }catch(IOException ex){
             Logger.getInstance().log(Logger.Logtype.DEBUG,"Could not connect to server: '\"+connectIp+\"'");
@@ -190,7 +190,7 @@ public class Player {
     private boolean tryReconnect(){
         Logger.getInstance().log(Logger.Logtype.DEBUG,"Try reconnect...");
         if(reConnect(null)){//lost connection
-            Update();
+            update();
         }else{
             Logger.getInstance().log(Logger.Logtype.DEBUG,"Disconnected from server");
             disconnect();
@@ -219,7 +219,7 @@ public class Player {
         return byConnect;
     }
 
-    public void Update(){
+    public void update(){
         if(connectSocket == null){
             if(byConnect && threadetConnectSocket == null && connectException == null){//by connect but not finished
                 return;
