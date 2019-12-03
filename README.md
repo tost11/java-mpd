@@ -1,2 +1,14 @@
 # java-mpd
-Java API for MPD (Music Player Deamon)
+Java Client for MPD (Music Player Deamon)
+
+## Language
+Java open-jdk 11
+
+## Features
+- Checking Files, Playlists, Songs, Artists
+- Setting Player Status (Play, Pause, Next, Repeat, usw...)
+- Recognizing changes on Player made by other Device
+- Download for Album Covers
+
+## Dependencies
+None
