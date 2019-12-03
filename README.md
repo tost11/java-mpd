@@ -12,3 +12,6 @@ Java open-jdk 11
 
 ## Dependencies
 None
+
+## How to use
+Read Examples in /scr/examples

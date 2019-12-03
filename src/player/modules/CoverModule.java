@@ -31,6 +31,13 @@ public class CoverModule extends BasicModule<CoverListener> {
         public int y;
     }
 
+    public void setScaleSize(int x, int y){
+        if(x <= 0 || y <= 0){
+            return;
+        }
+        SCALE_COVER = new ScaleSize(x,y);
+    }
+
     private HashMap<String,CoverData> loadingCovers = new HashMap<>();
     private HashMap<String, Cover> covers = new HashMap<>();
     private static final String COVERPATH = "covers";
