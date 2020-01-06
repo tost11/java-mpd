@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class Tools {
+    public static String configFileName = "config.properties";
+
     public static int seperateInt(String line){
         return Integer.parseInt(line.split(":")[1].trim());
     }
@@ -29,7 +31,7 @@ public class Tools {
     static public String loadFromProperties(final String name){//load given variable from config file or returns null
         try {
             Properties prop = new Properties();
-            prop.load(new FileInputStream("config.properties"));
+            prop.load(new FileInputStream(configFileName));
             String st = prop.getProperty(name);
             if(st != null && !st.isEmpty()){
                 return st;
@@ -40,13 +42,28 @@ public class Tools {
         return null;
     }
 
+
     static public Integer loadFromPropertiesInt(final String name){//load given variable from config file or returns null
         try {
             Properties prop = new Properties();
-            prop.load(new FileInputStream("config.properties"));
+            prop.load(new FileInputStream(configFileName));
             String st = prop.getProperty(name);
             if(st != null && !st.isEmpty()){
                 return Integer.parseInt(st);
+            }
+        }catch(IOException | NumberFormatException ex){
+            Logger.getInstance().log(Logger.Logtype.ERROR,"Could not load '"+ name + "' from config file: "+ex.getMessage());
+        }
+        return null;
+    }
+
+    static public Boolean loadFromPropertiesBoolean(final String name){//load given variable from config file or returns null
+        try {
+            Properties prop = new Properties();
+            prop.load(new FileInputStream(configFileName));
+            String st = prop.getProperty(name);
+            if(st != null && !st.isEmpty()){
+                return Boolean.parseBoolean(st);
             }
         }catch(IOException | NumberFormatException ex){
             Logger.getInstance().log(Logger.Logtype.ERROR,"Could not load '"+ name + "' from config file: "+ex.getMessage());
@@ -58,7 +75,7 @@ public class Tools {
         Vector<String> vec = new Vector<>();
         try {
             Properties prop = new Properties();
-            prop.load(new FileInputStream("config.properties"));
+            prop.load(new FileInputStream(configFileName));
             for(int i=0;i<100;i++){
                 String st = prop.getProperty(name+i);
                 if(st != null && !st.isEmpty()){
