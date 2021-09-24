@@ -1,22 +1,17 @@
-package de.tostsoft.mpdclient.examples;
+package de.tostsoft.mpdclient;
 
 import de.tostsoft.mpdclient.MpdClient;
 
 import static java.lang.System.exit;
 
-public class ShowPlayerStatus {
+public class CheckVersion {
     public static void  main(String args[]){
         MpdClient mpdClient = new MpdClient();
         if(!mpdClient.connect()){
             System.out.println("Could not connect to MPD-Server");
             exit(1);
         };
-        mpdClient.getPlayer().addListener(status->{
-            System.out.println("Player changed to status: "+status);
-        });
-        while(mpdClient.isConnected()){
-            mpdClient.update();
-        }
+        System.out.println("MPD-Server version is: "+mpdClient.getMPDVersion());
         mpdClient.disconnect();
     }
 }

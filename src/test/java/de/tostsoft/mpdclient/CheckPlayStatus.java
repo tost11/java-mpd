@@ -1,10 +1,10 @@
-package de.tostsoft.mpdclient.examples;
-
+package de.tostsoft.mpdclient;
 
 import de.tostsoft.mpdclient.MpdClient;
 import de.tostsoft.mpdclient.modules.PlayerModule;
 import de.tostsoft.mpdclient.modules.interfaces.PlayerListener;
 import de.tostsoft.mpdclient.modules.interfaces.PlaylistListener;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ public class CheckPlayStatus {
 
     static boolean running;
 
-    public static void main(String[] args)throws InterruptedException{
+    @Test
+    public void CheckPlaylistsTest() throws Exception{
         MpdClient mpdClient = new MpdClient();
         if(!mpdClient.connect()){
-            System.out.println("Could not connect to MPD-Server");
-            exit(1);
+            throw new RuntimeException("Could not connect to MPD-Server");
         };
         running = true;
         Thread t = new Thread(()->{
@@ -59,8 +59,7 @@ public class CheckPlayStatus {
         Thread.sleep(1000);
         List<String> rootFolders = mpdClient.getDatabase().getFiles();
         if(rootFolders.isEmpty()){
-            System.out.println("Database is empty");
-            return;
+            throw new RuntimeException("Database is empty");
         }
 
         //mpd 0.21.* and above

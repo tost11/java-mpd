@@ -1,4 +1,4 @@
-package de.tostsoft.mpdclient.examples;
+package de.tostsoft.mpdclient;
 
 
 import de.tostsoft.mpdclient.MpdClient;

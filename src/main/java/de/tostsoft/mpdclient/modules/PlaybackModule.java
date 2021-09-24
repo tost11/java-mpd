@@ -97,10 +97,11 @@ public class PlaybackModule extends BasicModule<PlaybackListener>{
     }
 
     public int getSongLength(){
-        if(currentSong == null){
+        PlaylistSong song = getCurrentSong();
+        if(song == null){
             return 0;
         }
-        return getCurrentSong().time;
+        return song.time;
     }
 
     public float getSongPosition(){

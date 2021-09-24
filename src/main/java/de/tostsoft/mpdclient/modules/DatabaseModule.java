@@ -118,7 +118,7 @@ public class DatabaseModule extends BasicModule<DatabaseListener> {
             ArrayList<String> tmp2 = new ArrayList<>();
             for (String line : result) {
                 if (line.startsWith(lookFor)) {
-                    tmp.add(line.split(":")[1].trim());
+                    tmp.add(line.split(":",2)[1].trim());
                 }
             }
             tmp2.sort(String::compareTo);
@@ -134,7 +134,7 @@ public class DatabaseModule extends BasicModule<DatabaseListener> {
         isDirectory.clear();
         for(String line:result){
             if(line.startsWith("directory: ")){
-                isDirectory.add(line.split(":")[1].trim());
+                isDirectory.add(line.split(":",2)[1].trim());
             }
         }
     }

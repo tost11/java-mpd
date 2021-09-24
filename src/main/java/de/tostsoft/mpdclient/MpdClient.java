@@ -307,7 +307,7 @@ public class MpdClient {
         }
         if(line.startsWith("changed: ")){
             Logger.getInstance().log(Logger.Logtype.DEBUG,"Received change from MPD");
-            String l = line.split(":")[1].trim();
+            String l = line.split(":",2)[1].trim();
             if(l.equals("update")){
                 querry("status",false);
                 querry("stats",true);
