@@ -94,6 +94,7 @@ public class MpdClient {
     private boolean connect(String ip, Integer port, boolean asyncron){
         if(ip == null || ip.isEmpty()){
             savedConnectIp = connectIp;
+            ip = connectIp;
         }else{
             savedConnectIp = ip;
         }
@@ -119,7 +120,7 @@ public class MpdClient {
                     threadetConnectSocket = s;//variable is importetn for multithreading (i suppose XD)
                 }catch (IOException ex){
                     connectException = ex;
-                    Logger.getInstance().log(Logger.Logtype.INFO,"Could not connect to connect to MPD-Server");
+                    Logger.getInstance().log(Logger.Logtype.ERROR,"Could not connect to connect to MPD-Server: "+threadetConnectIp+":"+threadetConnectPort);
                 }
             });
             t.start();
@@ -176,7 +177,7 @@ public class MpdClient {
             update();
             Logger.getInstance().log(Logger.Logtype.DEBUG,"Connection established");
         }catch(IOException ex){
-            Logger.getInstance().log(Logger.Logtype.DEBUG,"Could not connect to server: '\"+connectIp+\"'");
+            Logger.getInstance().log(Logger.Logtype.ERROR,"Could not connect to connect to MPD-Server: "+savedConnectIp+":"+saveConnectPort);
             connectSocket =null;
             return false;
         }
