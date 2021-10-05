@@ -50,17 +50,18 @@ public class CustomCommandModule extends BasicModule<CustomCommandListener> {
         }
     }
 
-    public int addCustomQuerry(String querr){
+    public PlayerCommandResult addCustomQuerry(String querr){
         return addCustomQuerry(querr,new ArrayList<>());
     }
 
-    public int addCustomQuerry(String quer, Collection<String> filters){
-        int res =  player.querry(quer);
-        if(res >= 0){
+    public PlayerCommandResult addCustomQuerry(String quer, Collection<String> filters){
+        PlayerCommandResult res =  player.querry(quer);
+        if(res != null){
             querrys.add(new Pair(res,filters));
-            return nextId++;
+            nextId++;
+            return res;
         }
-        return -1;
+        return null;
     }
 
     @Override

@@ -92,8 +92,8 @@ public class PlaybackModule extends BasicModule<PlaybackListener>{
         }
     }
 
-    public void setSongPosition(float pos){
-        player.querry("seekcur "+pos);
+    public PlayerCommandResult setSongPosition(float pos){
+        return player.querry("seekcur "+pos);
     }
 
     public int getSongLength(){

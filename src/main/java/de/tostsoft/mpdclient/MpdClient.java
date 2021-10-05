@@ -11,6 +11,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.Future;
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 
 public class MpdClient {
     private String connectIp;
@@ -243,7 +245,7 @@ public class MpdClient {
         timer.Update();
         if(timer.getCounterSeconds() > 1){//sendisAlive
             //System.out.println("Send keepalive");
-            if(querry("")  < 0){
+            if(querry("") == null){
                 return;//socket disconnected and reconect failed
             }
             timer.resetCounter();
@@ -324,6 +326,10 @@ public class MpdClient {
         }else{
             PlayerCommandResult rem = querryOrder.getFirst();
             if(line.equals("OK") || line.startsWith("ACK")){
+                //call custom listeners
+                for(BasicResultListener it: rem.getListeners()) {
+                    it.call(rem);
+                }
                 //call listeners with last result
                 for(BasicModule it: modules.values()) {
                     it.handleResult(rem);
@@ -341,10 +347,12 @@ public class MpdClient {
         }
     }
 
-    private int querry(String line, boolean addIdle){
+    private PlayerCommandResult querry(String line, boolean addIdle){
+
+
         //System.out.println("querry done: "+line+" "+removeIdle);
         if(connectSocket == null){
-            return -1;
+            return null;
         }
         //mutex.lock();
         PlayerCommandResult res = null;
@@ -372,9 +380,9 @@ public class MpdClient {
             if(tryReconnect()){
                 return querry(line,addIdle);
             }
-            return -2;
+            return null;
         }
-        return res == null ? 0 : res.getId();
+        return res;
     }
 
     public String getIp(){
@@ -385,7 +393,7 @@ public class MpdClient {
         connectIp = ip;
     }
 
-    public int querry(String line){
+    public PlayerCommandResult querry(String line){
         return querry(line,true);
     }
 

@@ -54,8 +54,8 @@ public class PlayerModule extends BasicModule<PlayerListener> {
         player.querry(status.toString().toLowerCase());
     }
 
-    public void playNext(){
-        player.querry("next");
+    public PlayerCommandResult playNext(){
+        return player.querry("next");
     }
 
     public void playPrevious(){
