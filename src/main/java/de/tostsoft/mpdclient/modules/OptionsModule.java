@@ -2,6 +2,7 @@ package de.tostsoft.mpdclient.modules;
 
 
 import de.tostsoft.mpdclient.MpdClient;
+import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
 import de.tostsoft.mpdclient.modules.interfaces.OptionListener;
 
 public class OptionsModule extends BasicModule<OptionListener> {
@@ -95,28 +96,28 @@ public class OptionsModule extends BasicModule<OptionListener> {
         return options[stats.ordinal()];
     }
 
-    public void querryRandom(boolean val){
-        querryStatus(OptionStatus.RANDOM,val?1:0);
+    public PlayerCommandResult querryRandom(boolean val){
+        return querryStatus(OptionStatus.RANDOM,val?1:0);
     }
 
-    public void querrySingle(boolean val){
-        querryStatus(OptionStatus.SINGLE,val?1:0);
+    public PlayerCommandResult querrySingle(boolean val){
+        return querryStatus(OptionStatus.SINGLE,val?1:0);
     }
 
-    public void querryRepeat(boolean val){
-        querryStatus(OptionStatus.REPEAT,val?1:0);
+    public PlayerCommandResult querryRepeat(boolean val){
+        return querryStatus(OptionStatus.REPEAT,val?1:0);
     }
 
-    public void querryCrossfade(int val){
-        querryStatus(OptionStatus.XFADE,val);
+    public PlayerCommandResult querryCrossfade(int val){
+        return querryStatus(OptionStatus.XFADE,val);
     }
 
-    public void querryVolume(int val){
-        player.querry("setvol "+val);
+    public PlayerCommandResult querryVolume(int val){
+        return player.querry("setvol "+val);
     }
 
-    public void querryStatus(OptionStatus stat, int val){
-        player.querry(stat.toString().toLowerCase()+" "+val);
+    public PlayerCommandResult querryStatus(OptionStatus stat, int val){
+        return player.querry(stat.toString().toLowerCase()+" "+val);
     }
 
 

@@ -1,8 +1,13 @@
 package de.tostsoft.mpdclient.modules;
 
 import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
+import de.tostsoft.mpdclient.tools.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,13 +16,17 @@ public class PlayerCommandResult {
     private static int ID_COUNT = 1;
     private int commandId = ID_COUNT++ ;
     private ArrayList<String> results = new ArrayList<>();
-    private List<BasicResultListener> listeners = new ArrayList<>();
     private boolean isFinished = false;
-    private Lock lock = new ReentrantLock();
+    private Semaphore semaphore = new Semaphore(1, true);
+    private Boolean wasSuccesfull = true;
 
     public PlayerCommandResult(String command){
         this.command = command;
-        lock.lock();//lock until finished
+        try {
+            semaphore.acquire(1);
+        }catch (InterruptedException ex){
+            Logger.getInstance().log(Logger.Logtype.ERROR,ex.getMessage());
+        }
     }
 
     public String getCommand(){
@@ -47,20 +56,38 @@ public class PlayerCommandResult {
         }
     }
 
-    public List<BasicResultListener> getListeners(){return listeners;}
-
     public boolean isFinished(){
         return isFinished;
     }
 
-    public void setFinished(boolean finished){
-        isFinished = finished;
-        lock.unlock();
+    public void finish(boolean succesfull){
+        wasSuccesfull = succesfull;
+        isFinished = true;
+        semaphore.release(1);
     }
 
-    public void waitForCompletion(){
+    public boolean waitForCompletion() {
+        return waitForCompletion(0,null);
+    }
+
+    public boolean waitForCompletion(long time,TimeUnit timeUnit){
         //this look stupid but it is not
-        lock.lock();
-        lock.unlock();
+        try {
+            if(timeUnit != null){
+                if(!semaphore.tryAcquire(time,timeUnit)){
+                    return false;
+                }
+            }else{
+                semaphore.acquire();
+            }
+        }catch (InterruptedException ex){
+            Logger.getInstance().log(Logger.Logtype.ERROR,ex.getMessage());
+        }
+        semaphore.release();
+        return true;
+    }
+
+    public Boolean wasSuccesfull(){
+        return wasSuccesfull;
     }
 }

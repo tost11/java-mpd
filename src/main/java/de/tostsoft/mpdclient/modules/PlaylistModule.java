@@ -3,6 +3,7 @@ package de.tostsoft.mpdclient.modules;
 import de.tostsoft.mpdclient.MpdClient;
 import de.tostsoft.mpdclient.Tools;
 import de.tostsoft.mpdclient.model.PlaylistSong;
+import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
 import de.tostsoft.mpdclient.modules.interfaces.PlaylistListener;
 
 import java.util.ArrayList;
@@ -53,6 +54,13 @@ public class PlaylistModule extends BasicModule<PlaylistListener> {
 
     public PlaylistSong getSong(int id){
         return songs.get(id);
+    }
+
+    public PlayerCommandResult play(int index){
+        if(playlist.size() <= 0 || index >= playlist.size()){
+            return null;
+        }
+        return player.querry("play "+index);
     }
 
     public void callListaners(){

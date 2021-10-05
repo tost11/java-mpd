@@ -4,6 +4,7 @@ package de.tostsoft.mpdclient.modules;
 import de.tostsoft.mpdclient.MpdClient;
 import de.tostsoft.mpdclient.Tools;
 import de.tostsoft.mpdclient.model.PlaylistSong;
+import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
 import de.tostsoft.mpdclient.modules.interfaces.PlaybackListener;
 import de.tostsoft.mpdclient.tools.Timer;
 

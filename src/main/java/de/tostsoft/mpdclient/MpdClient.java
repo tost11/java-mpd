@@ -3,6 +3,7 @@ package de.tostsoft.mpdclient;
 
 import de.tostsoft.mpdclient.modules.*;
 import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
+import de.tostsoft.mpdclient.modules.interfaces.PlayerListener;
 import de.tostsoft.mpdclient.tools.Logger;
 import de.tostsoft.mpdclient.tools.Timer;
 
@@ -132,9 +133,15 @@ public class MpdClient {
         return reConnect(null);
     }
 
+    private void clearQuerryOrder(){
+        for (PlayerCommandResult playerCommandResult : querryOrder) {
+            playerCommandResult.finish(false);
+        }
+        querryOrder.clear();
+    }
 
     private boolean reConnect(Socket socket){
-        querryOrder.clear();
+        clearQuerryOrder();
         try {
             if(socket == null) {
                 connectSocket = new Socket(savedConnectIp, saveConnectPort);
@@ -211,7 +218,7 @@ public class MpdClient {
         }
         connectSocket = null;
         sockerWriter = null;
-        querryOrder.clear();
+        clearQuerryOrder();
         for(BasicModule it: modules.values()){
             it.reset();
         }
@@ -306,7 +313,7 @@ public class MpdClient {
 
     private void handleResult(String line){
         if(line.startsWith("ACK")){
-            Logger.getInstance().log(Logger.Logtype.WARNING,"Received errro from MPD: "+line);
+            Logger.getInstance().log(Logger.Logtype.WARNING,"Received error from MPD: "+line);
         }
         if(line.startsWith("changed: ")){
             Logger.getInstance().log(Logger.Logtype.DEBUG,"Received change from MPD");
@@ -315,7 +322,7 @@ public class MpdClient {
                 querry("status",false);
                 querry("stats",true);
             }else if(l.equals("options") || l.equals("player") || l.equals("mixer")){
-               querry("status");
+                querry("status");
             }else if(l.equals("stored_playlist")){
                 querry("listplaylists");
             }else if(l.equals("playlist")){
@@ -327,9 +334,7 @@ public class MpdClient {
             PlayerCommandResult rem = querryOrder.getFirst();
             if(line.equals("OK") || line.startsWith("ACK")){
                 //call custom listeners
-                for(BasicResultListener it: rem.getListeners()) {
-                    it.call(rem);
-                }
+                rem.finish(true);
                 //call listeners with last result
                 for(BasicModule it: modules.values()) {
                     it.handleResult(rem);
@@ -347,9 +352,7 @@ public class MpdClient {
         }
     }
 
-    private PlayerCommandResult querry(String line, boolean addIdle){
-
-
+    private <T> PlayerCommandResult querry(String line, boolean addIdle){
         //System.out.println("querry done: "+line+" "+removeIdle);
         if(connectSocket == null){
             return null;
@@ -372,7 +375,7 @@ public class MpdClient {
             }
             if(addIdle) {
                 sockerWriter.write("idle\n");
-                querryOrder.addLast(new PlayerCommandResult("idle"));
+                querryOrder.addLast(res = new PlayerCommandResult("idle"));
             }
             sockerWriter.flush();
         }catch(IOException ex){
@@ -393,7 +396,7 @@ public class MpdClient {
         connectIp = ip;
     }
 
-    public PlayerCommandResult querry(String line){
+    public <T> PlayerCommandResult querry(String line){
         return querry(line,true);
     }
 

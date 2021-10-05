@@ -3,6 +3,8 @@ package de.tostsoft.mpdclient.modules;
 
 import de.tostsoft.mpdclient.MpdClient;
 import de.tostsoft.mpdclient.Tools;
+import de.tostsoft.mpdclient.model.PlaylistSong;
+import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
 import de.tostsoft.mpdclient.modules.interfaces.PlayerListener;
 
 public class PlayerModule extends BasicModule<PlayerListener> {
@@ -50,16 +52,16 @@ public class PlayerModule extends BasicModule<PlayerListener> {
         return playerStatus;
     }
 
-    public void setStatus(PlayerStatus status){
-        player.querry(status.toString().toLowerCase());
+    public PlayerCommandResult setStatus(PlayerStatus status){
+        return player.querry(status.toString().toLowerCase());
     }
 
     public PlayerCommandResult playNext(){
         return player.querry("next");
     }
 
-    public void playPrevious(){
-        player.querry("previous");
+    public PlayerCommandResult playPrevious(){
+        return player.querry("previous");
     }
 
     boolean isPlaying(){

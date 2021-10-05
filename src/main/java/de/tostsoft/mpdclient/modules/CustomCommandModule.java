@@ -2,6 +2,7 @@ package de.tostsoft.mpdclient.modules;
 
 
 import de.tostsoft.mpdclient.MpdClient;
+import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
 import de.tostsoft.mpdclient.modules.interfaces.CustomCommandListener;
 import de.tostsoft.mpdclient.tools.Pair;
 
