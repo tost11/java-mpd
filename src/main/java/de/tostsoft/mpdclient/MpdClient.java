@@ -42,7 +42,7 @@ public class MpdClient {
     private ArrayList<DisconnectListener> disconnectListeners = new ArrayList<>();;
     private HashMap<String,BasicModule> modules = new HashMap<>();
     private LinkedList<PlayerCommandResult> querryOrder = new LinkedList();
-    private Timer timer = new Timer(true);
+    //private Timer timer = new Timer(true);
 
     private ArrayList<BasicResultListener> basicResultListeners = new ArrayList<>();
     public void addListener(BasicResultListener t){
@@ -152,7 +152,7 @@ public class MpdClient {
 
             sockerWriter = new BufferedWriter( new OutputStreamWriter(connectSocket.getOutputStream()));
 
-            timer.resetCounter();
+            //timer.resetCounter();
 
             while(!readline());
             String line = byteOutput.toString();
@@ -249,14 +249,14 @@ public class MpdClient {
                 return;
             }
         }
-        timer.Update();
+        /*timer.Update();
         if(timer.getCounterSeconds() > 1){//sendisAlive
             //System.out.println("Send keepalive");
             if(querry("") == null){
                 return;//socket disconnected and reconect failed
             }
             timer.resetCounter();
-        }
+        }*/
         try {
             while (readline()) {
                 String line = byteOutput.toString();
@@ -342,7 +342,7 @@ public class MpdClient {
                 basicResultListeners.forEach(lis->lis.call(rem));
                 //remove and check next
                 querryOrder.removeFirst();
-                if(rem.equals("idle") && !querryOrder.isEmpty() && querryOrder.getFirst().equals("noidle")){
+                if(rem.getCommand().equals("idle") && !querryOrder.isEmpty() && querryOrder.getFirst().getCommand().equals("noidle")){
                     //System.out.println("Extra removed: noidle");
                     querryOrder.removeFirst();
                 }
@@ -352,7 +352,7 @@ public class MpdClient {
         }
     }
 
-    private <T> PlayerCommandResult querry(String line, boolean addIdle){
+    private PlayerCommandResult querry(String line, boolean addIdle){
         //System.out.println("querry done: "+line+" "+removeIdle);
         if(connectSocket == null){
             return null;

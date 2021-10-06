@@ -30,23 +30,23 @@ public class PlaybackModule extends BasicModule<PlaybackListener>{
     public void handleResult(PlayerCommandResult result){
         if(result.getCommand().equals("status")){
             for(String line:result.getResults()) {
-                if (line.startsWith("songid")) {
+                if (line.startsWith("songid:")) {
                     int id = Tools.seperateInt(line);
                     if (currentSong == null) {
                         currentSong = id;
                     } else if (currentSong != id) {
-                        currentSong = Tools.seperateInt(line);
+                        currentSong = id;
                         callListeners(PlaybackEvent.SONG_CHANGED, getCurrentSong());
                     }
-                } else if (line.startsWith("nextsong")) {
+                } else if (line.startsWith("nextsong:")) {
                     int id = Tools.seperateInt(line);
                     if (nextSong == null) {
                         nextSong = id;
                     } else if (nextSong != id) {
-                        nextSong = Tools.seperateInt(line);
+                        nextSong = id;
                         callListeners(PlaybackEvent.NEXTSONG_CHANGED, getNextSong());
                     }
-                } else if (line.startsWith("elapsed")) {
+                } else if (line.startsWith("elapsed:")) {
                     Float f = Tools.seperateFloat(line);
                     timer.updateAndStartCounterS((double) f);
                     callListeners(PlaybackEvent.SONGPOSITION_CHANGED, f);
