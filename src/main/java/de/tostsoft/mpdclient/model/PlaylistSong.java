@@ -19,7 +19,6 @@ public class PlaylistSong {
     public PlaylistSong(){
     }
 
-
     public String getName(){
         if(name.trim().isEmpty()){
 
@@ -36,5 +35,16 @@ public class PlaylistSong {
         }else{
             return name;
         }
+    }
+
+    public String getCoverPath(){
+        if(filename.isEmpty()){
+            return null;
+        }
+        int index = filename.lastIndexOf("/");
+        if(index == -1){
+            return null;
+        }
+        return filename.substring(0,index);
     }
 }
