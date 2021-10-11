@@ -60,10 +60,13 @@ public class PlayerCommandResult {
         return isFinished;
     }
 
-    public void finish(boolean succesfull){
-        wasSuccesfull = succesfull;
+    public void finish(){
         isFinished = true;
         semaphore.release(1);
+    }
+
+    public void setSuccessFull(boolean successFull){
+        wasSuccesfull = successFull;
     }
 
     public boolean waitForCompletion() {

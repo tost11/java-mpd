@@ -3,17 +3,13 @@ package de.tostsoft.mpdclient;
 
 import de.tostsoft.mpdclient.modules.*;
 import de.tostsoft.mpdclient.modules.interfaces.BasicResultListener;
-import de.tostsoft.mpdclient.modules.interfaces.PlayerListener;
 import de.tostsoft.mpdclient.tools.Logger;
-import de.tostsoft.mpdclient.tools.Timer;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.Future;
-import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 
 public class MpdClient {
     private String connectIp;
@@ -135,7 +131,8 @@ public class MpdClient {
 
     private void clearQuerryOrder(){
         for (PlayerCommandResult playerCommandResult : querryOrder) {
-            playerCommandResult.finish(false);
+            playerCommandResult.setSuccessFull(false);
+            playerCommandResult.finish();
         }
         querryOrder.clear();
     }
@@ -334,12 +331,15 @@ public class MpdClient {
             PlayerCommandResult rem = querryOrder.getFirst();
             if(line.equals("OK") || line.startsWith("ACK")){
                 //call custom listeners
-                rem.finish(true);
+                rem.setSuccessFull(line.equals("OK"));
                 //call listeners with last result
                 for(BasicModule it: modules.values()) {
                     it.handleResult(rem);
                 }
                 basicResultListeners.forEach(lis->lis.call(rem));
+                if(!rem.getCommand().startsWith("albumart")) {//albumart is handled in module for that because of multi part response
+                    rem.finish();
+                }
                 //remove and check next
                 querryOrder.removeFirst();
                 if(rem.getCommand().equals("idle") && !querryOrder.isEmpty() && querryOrder.getFirst().getCommand().equals("noidle")){
@@ -375,7 +375,11 @@ public class MpdClient {
             }
             if(addIdle) {
                 sockerWriter.write("idle\n");
-                querryOrder.addLast(res = new PlayerCommandResult("idle"));
+                if(res == null){
+                    querryOrder.addLast(res = new PlayerCommandResult("idle"));
+                }else{
+                    querryOrder.addLast(new PlayerCommandResult("idle"));
+                }
             }
             sockerWriter.flush();
         }catch(IOException ex){
@@ -396,7 +400,7 @@ public class MpdClient {
         connectIp = ip;
     }
 
-    public <T> PlayerCommandResult querry(String line){
+    public PlayerCommandResult querry(String line){
         return querry(line,true);
     }
 

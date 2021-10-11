@@ -62,7 +62,7 @@ public class DownloadCover {
             return;
         }
 
-        Cover cover = mpdClient.getCover().getCover(rootFolders.get(0));//try to download cover from this folder
+        Cover cover = mpdClient.getCover().getCover(rootFolders.get(0)).getFirst();//try to download cover from this folder
         if(cover != null){//Cover already in  chche -> coud not happen
             System.out.println("Cover is already here... but how?");
             running = false;
@@ -75,7 +75,7 @@ public class DownloadCover {
 
         Thread.sleep(5000);//longer time too wait because cover download could tage some time
 
-        cover = mpdClient.getCover().getCover(rootFolders.get(0));//try to download cover from this folder
+        cover = mpdClient.getCover().getCover(rootFolders.get(0)).getFirst();//try to download cover from this folder
         if(cover == null){//cover not here maby there is no one or still in progress
             System.out.println("No Cover available or still by downloading");
         }else{

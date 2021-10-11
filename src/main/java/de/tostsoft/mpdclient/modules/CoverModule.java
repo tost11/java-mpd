@@ -5,6 +5,7 @@ import de.tostsoft.mpdclient.MpdClient;
 import de.tostsoft.mpdclient.model.Cover;
 import de.tostsoft.mpdclient.modules.interfaces.CoverListener;
 import de.tostsoft.mpdclient.tools.Logger;
+import de.tostsoft.mpdclient.tools.Pair;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,7 +45,7 @@ public class CoverModule extends BasicModule<CoverListener> {
         SCALE_COVER = new ScaleSize(x,y);
     }
 
-    private HashMap<String,CoverData> loadingCovers = new HashMap<>();
+    private HashMap<String,Pair<CoverData, List<PlayerCommandResult>>> loadingCovers = new HashMap<>();
     private HashMap<String,Cover> covers = new HashMap<>();
     private static final String COVERPATH = "covers";
     public static boolean CACHE_COVER = true;
@@ -57,24 +60,28 @@ public class CoverModule extends BasicModule<CoverListener> {
     @Override
     public void handleResult(PlayerCommandResult result) {
         if(result.getCommand().startsWith("albumart")){
-            Logger.getInstance().log(Logger.Logtype.DEBUG,"Coverslice Received");
-
             List<String> res = result.getResults();
-
 
             String[] command_subs = result.getCommand().split("\"");
             for(int i=0;i<command_subs.length;i++){
                 command_subs[i]= command_subs[i].trim();
             }
+            Pair<CoverData,List<PlayerCommandResult>> data = loadingCovers.get(command_subs[1]);
+            if(!result.wasSuccesfull()){
+                loadingCovers.remove(command_subs[1]);
+                data.getSecond().forEach(r->{
+                    r.setSuccessFull(false);//not good because content changes but is Finished should be called first
+                    r.finish();
+                });
+                return;
+            }
+            Logger.getInstance().log(Logger.Logtype.DEBUG,"Coverslice Received");
+
             if(res.size() < 3){//was not valid albumart command
                 return;
             }
 
-            CoverData coverData = loadingCovers.get(command_subs[1]);
-            if(coverData == null){
-                coverData = new CoverData(command_subs[1]);
-                loadingCovers.put(coverData.uri,coverData);
-            }
+            CoverData coverData = data.getFirst();
 
             int max = Integer.parseInt(res.get(0).replace("size: ",""));
             int red = Integer.parseInt(res.get(1).replace("binary: ",""));
@@ -128,6 +135,10 @@ public class CoverModule extends BasicModule<CoverListener> {
                 }
                 if(CACHE_COVER){
                     covers.put(cover.getUri(),cover);
+                    data.getSecond().forEach(c->{
+                        c.setSuccessFull(true);
+                        c.finish();
+                    });
                 }
                 callListeners(cover);
             }catch(IOException ex){
@@ -148,15 +159,20 @@ public class CoverModule extends BasicModule<CoverListener> {
         return ret;
     }
 
-    public Cover getCover(String uri){
+
+    public Pair<Cover,PlayerCommandResult> getCover(String uri){
         return getCover(uri,true);
     }
 
-    public Cover getCover(String uri, boolean request){
+    public Pair<Cover,PlayerCommandResult> getCover(String uri, boolean request){
+        int index = uri.lastIndexOf("/");
+        if(index != -1){
+            uri = uri.substring(0,index+1);
+        }
         if(CACHE_COVER){
             Cover cover = covers.get(uri);
             if(cover != null){
-                return cover;
+                return new Pair<>(cover,null);
             }
         }
         if(SAVE_COVER) {
@@ -172,7 +188,7 @@ public class CoverModule extends BasicModule<CoverListener> {
                         Logger.getInstance().log(Logger.Logtype.ERROR,"Error by loading Cover from Cache: "+ex.getMessage());
                     }
                 }
-                return cover;
+                return new Pair<>(cover,null);
             }else{
                 Logger.getInstance().log(Logger.Logtype.DEBUG,"Could not load cover from file: "+path);
             }
@@ -180,9 +196,13 @@ public class CoverModule extends BasicModule<CoverListener> {
 
         if(request) {
             if (player.isVersionAboveOrSame(0,21,0)) {
-                if (!loadingCovers.containsKey(uri)) {
-                    loadingCovers.put(uri,new CoverData(uri));//TODO check if not succesfull and remove
-                    player.querry("albumart \"" + uri + "\" 0");
+                Pair<CoverData,List<PlayerCommandResult>> byLoading = loadingCovers.get(uri);
+                if(byLoading != null){
+                    return new Pair(null,byLoading.getSecond().get(0));
+                }else{
+                    PlayerCommandResult res = player.querry("albumart \"" + uri + "\" 0");
+                    loadingCovers.put(uri,new Pair(new CoverData(uri), Arrays.asList(res)));
+                    return new Pair(null,res);
                 }
             } else {
                 Logger.getInstance().log(Logger.Logtype.WARNING,"Albumart is not supported in MPD version from server. Please update if you whant to use this feature");
