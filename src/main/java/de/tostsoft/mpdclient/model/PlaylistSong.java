@@ -25,11 +25,11 @@ public class PlaylistSong {
             String file = filename;
             int index = file.lastIndexOf(".");
             if(index > -1){
-                file = file.substring(0,index-1);
+                file = file.substring(0,index);
             }
             index = file.lastIndexOf("/");
             if(index > -1){
-                file = file.substring(index+1,file.length());
+                file = file.substring(index+1);
             }
             return file;
         }else{
