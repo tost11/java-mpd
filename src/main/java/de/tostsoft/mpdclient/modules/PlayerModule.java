@@ -60,6 +60,16 @@ public class PlayerModule extends BasicModule<PlayerListener> {
         return player.querry("next");
     }
 
+    public PlayerCommandResult playPlaylist(String name){
+        boolean wasPlaying = player.getPlayer().isPlaying();
+        player.querry("clear");
+        PlayerCommandResult res = player.querry("load \""+name+"\"");
+        if(wasPlaying){
+            return player.querry("play 0");
+        }
+        return res;
+    }
+
     public PlayerCommandResult playPrevious(){
         return player.querry("previous");
     }
