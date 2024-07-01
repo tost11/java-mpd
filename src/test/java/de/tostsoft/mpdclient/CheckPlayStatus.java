@@ -4,9 +4,9 @@ import de.tostsoft.mpdclient.MpdClient;
 import de.tostsoft.mpdclient.modules.PlayerModule;
 import de.tostsoft.mpdclient.modules.interfaces.PlayerListener;
 import de.tostsoft.mpdclient.modules.interfaces.PlaylistListener;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static java.lang.System.exit;
 
